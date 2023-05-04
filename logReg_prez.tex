@@ -1,0 +1,125 @@
+\documentclass{beamer}
+\usetheme{Warsaw}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amssymb} % Required for inserting images
+
+\title{Backpropagation za logisti\v cku regresiju}
+
+
+\begin{document}
+
+\frame{\titlepage}
+
+
+\begin{frame}
+\frametitle{Postavke}
+    \item Model je logisti\v cka regresija: $$\hat{y}=\sigma(z)$$ $$z=(\sum_i w_ix_i)$$\pause
+    \item Error je SSE: $$\mathbb{E}=\frac{1}{2} (t-\hat{y})^2$$\pause
+    \item Aktivacija je sigmoidna: $$\sigma(x)=\frac{1}{1+e^{-x}}$$\pause
+    \item Metoda optimizacije je stohasti\v cki gradijentni spust: $$w_i'=w_i - \eta \frac{\partial \mathbb{E}}{\partial w_i}$$ 
+\end{frame}
+
+\begin{frame}
+\frametitle{Osnovna pravila deriviranja}
+\begin{enumerate}
+    \item LD: $$[f(x)a+g(x)b]' = f(x)'a+g(x)'b$$
+    \item REC: $$[\frac{1}{f(x)}]'= - \frac{f'(x)}{f(x)^2}$$
+    \item CONST: $$c'=0$$
+    \item VAR: $$\frac{dy}{dz}z=1$$
+    \item EXP: $$[f(x)^n]'=n\cdot f(x)^{n-1} \cdot f'(x)$$
+    \item CEXP: $$[e^{f(x)}]'=e^{f(x)}\cdot f'(x)$$
+    \item CHAIN: $$\frac{dx}{dz}=\frac{dx}{dy}\frac{dy}{dz}$$
+    \end{enumerate}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Weight update za logisti\v cku regresiju}
+
+Za puni GD:
+
+$$w_i'=w_i-\eta\frac{\partial\mathbb{E}}{\partial w_i}=w_i + \sum_n\eta x_i^{(n)}\hat{y}^{(n)}(1-\hat{y}^{(n)})(t^{(n)}-\hat{y}^{(n)})$$ \pause
+
+Mi radimo online SGD:
+
+$$w_i'=w_i-\eta\frac{\partial\mathbb{E}}{\partial w_i}=w_i + \eta x_i\hat{y}(1-\hat{y})(t-\hat{y})$$\pause
+
+\alert{No za\v sto $\frac{\partial\mathbb{E}}{\partial w_i}= x_i\hat{y}(1-\hat{y})(t-\hat{y})$?}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Za po\v cetak, CHAIN\ldots}
+Prvo s CHAIN raskomadamo:
+$$\frac{\partial \mathbb{E}}{\partial w_i}= \frac{\partial \hat{y}}{\partial w_i} \frac{d \mathbb{E}}{d\hat{y}}$$\pause
+Na desni dio \' cemo se jo\v s vratiti, za sad gledamo $\frac{\partial \hat{y}}{\partial w_i}$. Ponovno primjenimo CHAIN i dobijemo
+
+$$\frac{\partial \hat{y}}{\partial w_i} = \frac{d \hat{y}}{d z} \frac{\partial z}{\partial w_i}$$\pause
+
+Kako $z=\sum_i w_i x_i$, $\frac{\partial z}{\partial w_i}=x_i$ (analogno vrijedi i za $\frac{\partial z}{\partial x_i} = w_i$)\pause
+
+\alert{Sve \v sto jo\v s trebamo pokazati je $\frac{d\hat{y}}{dz}=\hat{y}(1-\hat{y})$}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{$\frac{d\hat{y}}{dz}=\hat{y}(1-\hat{y})$}
+$$\frac{d\hat{y}}{dz} \frac{1}{1+e^{-z}} = -  \frac{\frac{d\hat{y}}{dz} (1+e^{-z})}{(1+e^{-z})^2} \qquad (REC)$$
+
+$$ = -\frac{\frac{d\hat{y}}{dz} 1+ \frac{d\hat{y}}{dz} e^{-z}}{(1+e^{-z})^2}  \qquad (LD)$$
+
+$$ = -\frac{0+ \frac{d\hat{y}}{dz}(e^{-z})}{(1+e^{-z})^2}  \qquad (CONST)$$
+
+$$ = -\frac{e^{-z} \cdot \frac{d\hat{y}}{dz}(-z)}{(1+e^{-z})^2}  \qquad (CEXP)$$
+
+$$ = -\frac{e^{-z} \cdot \frac{d\hat{y}}{dz}(z) \cdot (-1)}{(1+e^{-z})^2}  \qquad (LD)$$
+
+$$ = -\frac{e^{-z}  \cdot (-1)}{(1+e^{-z})^2}= \frac{e^{-z}}{(1+e^{-z})^2} \qquad (VAR)$$
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{$\frac{d\hat{y}}{dz}=\hat{y}(1-\hat{y})$}
+
+Ajmo ovo faktorizirati na sljede\' ci na\v cin:
+$$\frac{d\hat{y}}{dz}=\frac{e^{-z}}{(1+e^{-z})^2}=\frac{1}{1+e^{-z}}\cdot\frac{e^{-z}}{1+e^{-z}}$$\pause
+Prisjetimo se da $\frac{1}{1+e^{-z}}=\hat{y}$ \pause
+
+Sad treba samo pojednostavniti $$\frac{e^{-z}}{1+e^{-z}}= \frac{(1+e^{-z})-1}{1+e^{-z}}=\frac{1+e^{-z}}{1+e^{-z}}-\frac{1}{1+e^{-z}}=1-\frac{1}{1+e^{-z}}=1-\hat{y}$$ \pause
+
+\alert{Dakle, $\frac{d\hat{y}}{dz}=\hat{y}(1-\hat{y})$}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{$\frac{d\mathbb{E}}{d\hat{y}}$}
+Ostaje nam jos drugi dio, a to je $\frac{d\mathbb{E}}{d\hat{y}}$.\pause
+
+Prisjetimo se da koristimo SSE, i to u varijanti za stohasti\v cki gradijentni spust, $\mathbb{E}=\frac{1}{2}(t-y)^2$ (za obi\v can gradijentni spust ide jo\v s suma po svim predikcijama na datasetu).\pause
+
+$$\frac{d\mathbb{E}}{d\hat{y}} [\frac{1}{2}(t-\hat{y})^2] =_{LD}  \frac{1}{2}\frac{d\mathbb{E}}{d\hat{y}}(t-\hat{y})^2 =_{EXP} \frac{1}{2}\cdot 2 \cdot (t-\hat{y}) \cdot \frac{d\mathbb{E}}{d\hat{y}}(t-\hat{y})$$ 
+$$=_{LD} (t-\hat{y}) [\frac{d\mathbb{E}}{d\hat{y}}t - \frac{d\mathbb{E}}{d\hat{y}}\hat{y}] =_{CONST,VAR} (t-\hat{y}) \cdot (0-1)= -1\cdot (t-\hat{y})  $$
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Kona\v cni weight update za logisti\v cku regresiju prema specifikacijama (SSE, Logisti\v cka, SGD)}
+Prisjetimo se:
+$$w_i'=w_i-\eta\frac{\partial\mathbb{E}}{\partial w_i} \qquad \frac{\partial \mathbb{E}}{\partial w_i}= \frac{\partial z}{\partial w_i} \frac{d \hat{y}}{d z} \frac{d \mathbb{E}}{d\hat{y}}$$\pause
+
+
+$$\frac{d\hat{y}}{dz}=\hat{y}(1-\hat{y}) \qquad \frac{d\mathbb{E}}{d\hat{y}}=-(t-\hat{y}) \qquad \frac{\partial z}{\partial w_i}=x_i$$\pause
+
+Sve sto nam preostaje jest sastaviti weight update formulu:
+$$w_i'=w_i-\eta\frac{\partial \mathbb{E}}{\partial w_i}= w_i -\eta\frac{\partial z}{\partial w_i} \frac{d \hat{y}}{d z} \frac{d \mathbb{E}}{d\hat{y}}= w_i-\eta (x_i \cdot \hat{y}(1-\hat{y})\cdot -(t-\hat{y}))=$$
+$$=w_i+\eta x_i \hat{y} (1-\hat{y})(t-\hat{y})$$
+
+\end{frame}
+
+
+
+\end{document}
