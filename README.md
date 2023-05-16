@@ -11,3 +11,8 @@ U ovom ćete repozitoriju naći Python kod s predavanja i LaTeX prezentacija. Ak
 * Zadatak se može rješavati pojedinačno ili u timovima. Tim možete slobodno konstituirati i mijenjati po želji, s tim da tim može imati najviše pet članova, i ne može sadržavati studente koji su članovi drugih timova ili koji su položili ispit. 
 * Ako se rješava pojedinačno, tada student mora imati zadatak na svom GitHubu. Ako se rješava u timovima, tada mora biti na jednom repozitoriju, ali svaki član tima je morao forkati inicijalni commit i napraviti barem jedan pull request. Ako vas zanima više o GitHubu, prođite ovaj tečaj: https://www.udacity.com/course/version-control-with-git--ud123
 * Svi članovi tima moraju izaći na isti rok i zajedno braniti svoj sustav. Svaki član tima treba znati osnove svega, ali treba znati detalje isključivo dijela koda koji je sam radio. Ako neki član tima ne izađe na isti rok kao ostali, taj član tima odgovara kao pojedinac koji nije u timu i brani cijeli svoj kod kao da ga je sam napravio.
+
+##Anketa##
+https://forms.gle/HBP1z1R8BdYmLAwFA
+
+
